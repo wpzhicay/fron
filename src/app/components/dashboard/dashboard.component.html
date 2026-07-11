@@ -1,0 +1,87 @@
+<div class="w-full">
+  <div class="mb-8">
+    <h2 class="text-3xl font-bold text-gray-900">Dashboard</h2>
+    <p class="text-gray-600 mt-2">Bienvenido al sistema de gestión de A.D.A Solar</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex justify-center items-center py-20">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <p class="text-gray-600 mt-4">Cargando datos...</p>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div *ngIf="!loading" class="space-y-8">
+    <!-- Sistema Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+      <!-- Backend Status Card -->
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Estado Backend</p>
+            <p class="text-3xl font-bold mt-2" [ngClass]="status === 'ok' ? 'text-emerald-500' : 'text-red-500'">
+              {{ status | uppercase }}
+            </p>
+          </div>
+          <div class="text-4xl" [ngClass]="status === 'ok' ? 'text-emerald-500' : 'text-red-500'">
+            {{ status === 'ok' ? '✓' : '✗' }}
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-4">
+          {{ status === 'ok' ? 'Sistema operativo' : 'Sistema sin conectar' }}
+        </p>
+      </div>
+
+      <!-- Solar Panels Card -->
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Paneles Solares</p>
+            <p class="text-4xl font-bold mt-2 text-primary">{{ panelsCount }}</p>
+          </div>
+          <div class="text-5xl text-primary opacity-20">☀️</div>
+        </div>
+        <p class="text-xs text-gray-500 mt-4">Paneles instalados</p>
+      </div>
+
+      <!-- Users Card -->
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Usuarios</p>
+            <p class="text-4xl font-bold mt-2 text-secondary">{{ usersCount }}</p>
+          </div>
+          <div class="text-5xl text-secondary opacity-20">👥</div>
+        </div>
+        <p class="text-xs text-gray-500 mt-4">Usuarios registrados</p>
+      </div>
+    </div>
+
+    <!-- Device Status Section -->
+    <div>
+      <h3 class="text-2xl font-bold text-gray-900 mb-4">📱 Estado del Dispositivo</h3>
+      <app-device-status></app-device-status>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="card bg-gradient-to-r from-primary to-secondary text-white">
+      <h3 class="text-xl font-bold mb-4">Acciones rápidas</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a 
+          routerLink="/solar-panels" 
+          class="block p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all text-white text-center font-medium"
+        >
+          📊 Ver Paneles Solares
+        </a>
+        <a 
+          routerLink="/users" 
+          class="block p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all text-white text-center font-medium"
+        >
+          👤 Gestionar Usuarios
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

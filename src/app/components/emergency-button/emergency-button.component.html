@@ -1,0 +1,68 @@
+<div class="fixed bottom-8 right-8 z-50 flex flex-col gap-3">
+  <!-- Mensajes de estado -->
+  <div *ngIf="showSuccess" class="animate-bounce bg-emerald-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2">
+    <span class="text-lg">✓</span>
+    <span class="text-sm font-medium">{{ successMessage }}</span>
+  </div>
+
+  <div *ngIf="showError" class="animate-pulse bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2">
+    <span class="text-lg">✕</span>
+    <span class="text-sm font-medium">{{ errorMessage }}</span>
+  </div>
+
+  <!-- Botón de Emergencia Principal -->
+  <button
+    (click)="triggerEmergency()"
+    [disabled]="isLoading || !isActive"
+    class="
+      relative
+      w-16 h-16 rounded-full
+      bg-red-600 hover:bg-red-700 active:bg-red-800
+      disabled:bg-red-400 disabled:opacity-50 disabled:cursor-not-allowed
+      text-white font-bold text-2xl
+      shadow-lg hover:shadow-xl
+      transition-all duration-200
+      flex items-center justify-center
+      animate-pulse
+      border-2 border-red-800
+    "
+    [class.opacity-50]="!isActive"
+    title="SOS - Enviar ubicación de emergencia"
+  >
+    <span *ngIf="!isLoading" class="drop-shadow-md">🚨</span>
+    <span *ngIf="isLoading" class="animate-spin">⏳</span>
+  </button>
+
+  <!-- Botón secundario para abrir Google Maps -->
+  <button
+    (click)="openMaps()"
+    [disabled]="isLoading"
+    class="
+      w-16 h-16 rounded-full
+      bg-blue-600 hover:bg-blue-700 active:bg-blue-800
+      disabled:bg-blue-400
+      text-white font-bold text-xl
+      shadow-lg hover:shadow-xl
+      transition-all duration-200
+      flex items-center justify-center
+      border-2 border-blue-800
+    "
+    title="Abrir ubicación en Google Maps"
+  >
+    📍
+  </button>
+
+  <!-- Indicador de estado -->
+  <div class="bg-gray-800 text-white px-3 py-2 rounded-lg shadow-lg text-xs text-center font-medium">
+    <span *ngIf="isActive" class="text-emerald-400">● Activo</span>
+    <span *ngIf="!isActive" class="text-yellow-400">● En espera...</span>
+    <span *ngIf="isLoading" class="text-yellow-300">● Enviando...</span>
+  </div>
+</div>
+
+<!-- Zona de información (opcional) -->
+<div class="fixed top-24 right-8 z-40 text-xs text-gray-600 max-w-xs hidden lg:block">
+  <p class="bg-white bg-opacity-90 p-2 rounded shadow">
+    💡 El botón SOS capturará tu ubicación exacta y la enviará a los sistemas de emergencia.
+  </p>
+</div>

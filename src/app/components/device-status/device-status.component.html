@@ -1,0 +1,172 @@
+<div class="w-full space-y-6">
+  <!-- Sección de Ubicación GPS -->
+  <div class="card">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+        📍 Ubicación GPS
+      </h3>
+      <button 
+        (click)="showLocationDetails = !showLocationDetails"
+        class="text-gray-600 hover:text-primary transition-colors"
+      >
+        {{ showLocationDetails ? '▼' : '▶' }}
+      </button>
+    </div>
+
+    <!-- Estado de Carga -->
+    <div *ngIf="locationLoading" class="flex items-center gap-2 text-primary">
+      <div class="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+      <span>Obteniendo ubicación...</span>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="locationError && !locationLoading" class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+      <p>⚠️ {{ locationError }}</p>
+      <button (click)="getLocation()" class="text-red-600 hover:text-red-700 font-medium mt-2">
+        Reintentar
+      </button>
+    </div>
+
+    <!-- Información de Ubicación -->
+    <div *ngIf="location && !locationError" class="space-y-3">
+      <!-- Resumen -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-xs text-gray-600 font-medium">Latitud</p>
+            <p class="text-lg font-bold text-blue-600">{{ location.latitude.toFixed(6) }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-600 font-medium">Longitud</p>
+            <p class="text-lg font-bold text-blue-600">{{ location.longitude.toFixed(6) }}</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mt-3">
+          📏 Precisión: ±{{ location.accuracy.toFixed(0) }} metros
+        </p>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="flex gap-2">
+        <button (click)="openMaps()" class="btn-primary flex-1 text-sm">
+          🗺️ Ver en Maps
+        </button>
+        <button (click)="copyCoordinates()" class="btn-secondary flex-1 text-sm">
+          📋 Copiar
+        </button>
+      </div>
+
+      <!-- Detalles -->
+      <div *ngIf="showLocationDetails" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+        <p class="text-xs text-gray-600">
+          <strong>Última actualización:</strong> {{ location.timestamp | date:'medium' }}
+        </p>
+        <div class="mt-2 p-2 bg-gray-100 rounded font-mono text-xs text-gray-700 break-all">
+          {{ location.latitude }}, {{ location.longitude }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de Batería del Dispositivo -->
+  <div class="card">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+        🔋 Batería del Dispositivo
+      </h3>
+      <button 
+        (click)="showBatteryDetails = !showBatteryDetails"
+        class="text-gray-600 hover:text-primary transition-colors"
+      >
+        {{ showBatteryDetails ? '▼' : '▶' }}
+      </button>
+    </div>
+
+    <!-- No Disponible -->
+    <div *ngIf="!batteryAvailable" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-700 text-sm">
+      <p>⚠️ La información de batería no está disponible en este navegador.</p>
+      <p class="text-xs mt-2 text-yellow-600">Compatible con Chrome, Edge y algunos navegadores móviles.</p>
+    </div>
+
+    <!-- Disponible -->
+    <div *ngIf="batteryAvailable && battery" class="space-y-3">
+      <!-- Estado General -->
+      <div [ngClass]="{
+        'bg-emerald-50 border-emerald-200': (getBatteryPercentage() || 0) >= 50,
+        'bg-yellow-50 border-yellow-200': (getBatteryPercentage() || 0) >= 20 && (getBatteryPercentage() || 0) < 50,
+        'bg-red-50 border-red-200': (getBatteryPercentage() || 0) < 20
+      }" class="border rounded-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-2xl">{{ battery.charging ? '🔌' : '🔋' }}</span>
+          <span [ngClass]="{
+            'text-emerald-600': (getBatteryPercentage() || 0) >= 50,
+            'text-yellow-600': (getBatteryPercentage() || 0) >= 20 && (getBatteryPercentage() || 0) < 50,
+            'text-red-600': (getBatteryPercentage() || 0) < 20
+          }" class="text-2xl font-bold">{{ getBatteryPercentage() }}%</span>
+        </div>
+        
+        <!-- Barra de Progreso -->
+        <div class="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
+          <div 
+            [ngClass]="{
+              'bg-emerald-500': (getBatteryPercentage() || 0) >= 50,
+              'bg-yellow-500': (getBatteryPercentage() || 0) >= 20 && (getBatteryPercentage() || 0) < 50,
+              'bg-red-500': (getBatteryPercentage() || 0) < 20
+            }"
+            [style.width.%]="getBatteryPercentage() || 0"
+            class="h-full transition-all duration-500"
+          ></div>
+        </div>
+
+        <!-- Estado -->
+        <p class="text-sm font-medium mt-3">
+          {{ battery.charging ? '🔌 Cargando' : '📱 En uso' }}
+        </p>
+      </div>
+
+      <!-- Tiempos Estimados -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+          <p class="text-xs text-gray-600 font-medium">
+            {{ battery.charging ? 'Tiempo para cargar' : 'Tiempo restante' }}
+          </p>
+          <p class="text-lg font-bold text-blue-600 mt-1">
+            {{ battery.charging ? getChargingTime() : getDischargingTime() }}
+          </p>
+        </div>
+        
+        <div class="bg-purple-50 rounded-lg p-3 border border-purple-200">
+          <p class="text-xs text-gray-600 font-medium">Estado</p>
+          <p class="text-sm font-bold text-purple-600 mt-1">
+            {{ battery.charging ? 'Conectado' : 'Desconectado' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Detalles Completos -->
+      <div *ngIf="showBatteryDetails" class="bg-gray-50 rounded-lg p-4 border border-gray-200 text-sm space-y-2">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <p class="text-gray-600">Nivel</p>
+            <p class="font-bold text-gray-900">{{ (battery.level * 100).toFixed(1) }}%</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Estado</p>
+            <p class="font-bold text-gray-900">{{ battery.charging ? 'Cargando' : 'Descargando' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Carga en</p>
+            <p class="font-bold text-gray-900">{{ isInfinity(battery.chargingTime) ? '∞' : formatHours(battery.chargingTime) }}h</p>
+          </div>
+          <div>
+            <p class="text-gray-600">Descarga en</p>
+            <p class="font-bold text-gray-900">{{ isInfinity(battery.dischargingTime) ? '∞' : formatHours(battery.dischargingTime) }}h</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 border-t border-gray-300 pt-2">
+          Actualizado: {{ battery.timestamp | date:'medium' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>A.D.A Solar</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Facebook SDK -->
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: '1234567890123456', // ⚠️ REEMPLAZA CON TU APP ID DE FACEBOOK
+        xfbml: true,
+        version: 'v18.0'
+      });
+    };
+  </script>
+  <script async defer crossorigin="anonymous" 
+    src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v18.0" 
+    nonce="XXXXXX">
+  </script>
+
+  <!-- Google SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

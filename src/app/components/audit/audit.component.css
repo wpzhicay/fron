@@ -1,0 +1,5 @@
+/* Estilos del componente de auditoría */
+
+:host {
+  display: block;
+}

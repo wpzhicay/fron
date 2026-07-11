@@ -1,0 +1,129 @@
+<div class="min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-primary to-secondary text-white shadow-lg sticky top-0 z-40" *ngIf="isLoggedIn()">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex items-center">
+          <h1 class="text-xl sm:text-2xl font-bold">☀️ A.D.A Solar</h1>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex gap-8">
+          <a 
+            routerLink="/dashboard" 
+            routerLinkActive="border-b-2 border-white"
+            class="py-2 px-1 hover:opacity-80 transition-opacity"
+          >
+            Dashboard
+          </a>
+          <a 
+            routerLink="/solar-panels" 
+            routerLinkActive="border-b-2 border-white"
+            class="py-2 px-1 hover:opacity-80 transition-opacity"
+          >
+            Paneles
+          </a>
+          <a 
+            routerLink="/users" 
+            routerLinkActive="border-b-2 border-white"
+            class="py-2 px-1 hover:opacity-80 transition-opacity"
+          >
+            Usuarios
+          </a>
+          <a 
+            routerLink="/audit" 
+            routerLinkActive="border-b-2 border-white"
+            class="py-2 px-1 hover:opacity-80 transition-opacity"
+          >
+            Auditoría
+          </a>
+        </nav>
+
+        <!-- User Menu -->
+        <div class="hidden md:flex items-center gap-6">
+          <app-ip-info></app-ip-info>
+          <div class="flex items-center gap-2">
+            <span class="text-sm">{{ currentUser?.name || currentUser?.email || 'Usuario' }}</span>
+          </div>
+          <button 
+            (click)="logout()"
+            class="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-colors"
+          >
+            Cerrar Sesión
+          </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button 
+          (click)="toggleMobileMenu()"
+          class="md:hidden p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition-colors"
+          aria-label="Toggle menu"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Navigation -->
+      <nav 
+        *ngIf="mobileMenuOpen"
+        class="md:hidden pb-4 space-y-2 border-t border-white border-opacity-20"
+      >
+        <button 
+          (click)="navigateTo('/dashboard')"
+          class="w-full text-left px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors"
+        >
+          Dashboard
+        </button>
+        <button 
+          (click)="navigateTo('/solar-panels')"
+          class="w-full text-left px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors"
+        >
+          Paneles Solares
+        </button>
+        <button 
+          (click)="navigateTo('/users')"
+          class="w-full text-left px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors"
+        >
+          Usuarios
+        </button>
+        <button 
+          (click)="navigateTo('/audit')"
+          class="w-full text-left px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors"
+        >
+          Auditoría
+        </button>
+        <button 
+          (click)="logout()"
+          class="w-full text-left px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-colors"
+        >
+          Cerrar Sesión
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white mt-12" *ngIf="isLoggedIn()">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <p class="text-center text-gray-400">
+        © 2026 A.D.A Solar - Solar Energy Management System. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Emergency Button (visible when logged in) -->
+  <app-emergency-button *ngIf="isLoggedIn()"></app-emergency-button>
+</div>

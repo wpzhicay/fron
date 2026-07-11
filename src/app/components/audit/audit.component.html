@@ -1,0 +1,320 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Encabezado -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">📋 Panel de Auditoría</h1>
+      <p class="text-gray-600">Registro de actividades del sistema</p>
+    </div>
+
+    <!-- Controles de filtrado -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <!-- Filtros rápidos por período -->
+      <div class="mb-4 pb-4 border-b border-gray-200">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Período Rápido</label>
+        <div class="flex gap-2 flex-wrap">
+          <button
+            (click)="setDateRange('today')"
+            [class.bg-blue-600]="activePeriod === 'today'"
+            [class.text-white]="activePeriod === 'today'"
+            [class.bg-gray-200]="activePeriod !== 'today'"
+            class="px-3 py-1 rounded-lg transition text-sm font-medium"
+          >
+            Hoy
+          </button>
+          <button
+            (click)="setDateRange('week')"
+            [class.bg-blue-600]="activePeriod === 'week'"
+            [class.text-white]="activePeriod === 'week'"
+            [class.bg-gray-200]="activePeriod !== 'week'"
+            class="px-3 py-1 rounded-lg transition text-sm font-medium"
+          >
+            Esta Semana
+          </button>
+          <button
+            (click)="setDateRange('month')"
+            [class.bg-blue-600]="activePeriod === 'month'"
+            [class.text-white]="activePeriod === 'month'"
+            [class.bg-gray-200]="activePeriod !== 'month'"
+            class="px-3 py-1 rounded-lg transition text-sm font-medium"
+          >
+            Este Mes
+          </button>
+          <button
+            (click)="setDateRange('custom')"
+            [class.bg-blue-600]="activePeriod === 'custom'"
+            [class.text-white]="activePeriod === 'custom'"
+            [class.bg-gray-200]="activePeriod !== 'custom'"
+            class="px-3 py-1 rounded-lg transition text-sm font-medium"
+          >
+            Personalizado
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <!-- Filtro por tipo de acción -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Tipo de Acción
+          </label>
+          <select
+            [(ngModel)]="selectedActionType"
+            (change)="filterLogs()"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Todas las acciones</option>
+            <option value="LOGIN">Login</option>
+            <option value="LOGOUT">Logout</option>
+            <option value="EMERGENCY">Emergencia</option>
+            <option value="DEVICE_CHANGE">Cambio de Dispositivo</option>
+            <option value="USER_ACTION">Acción de Usuario</option>
+            <option value="ERROR">Error</option>
+          </select>
+        </div>
+
+        <!-- Filtro por usuario -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Usuario
+          </label>
+          <input
+            [(ngModel)]="selectedUser"
+            (keyup)="filterLogs()"
+            type="text"
+            placeholder="Buscar por usuario..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <!-- Rango de fechas - Desde -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Desde
+          </label>
+          <input
+            [(ngModel)]="startDate"
+            (change)="filterLogs()"
+            type="date"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <!-- Rango de fechas - Hasta -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Hasta
+          </label>
+          <input
+            [(ngModel)]="endDate"
+            (change)="filterLogs()"
+            type="date"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="flex gap-2 flex-wrap">
+        <button
+          (click)="filterLogs()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          🔍 Aplicar Filtros
+        </button>
+        <button
+          (click)="resetFilters()"
+          class="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition"
+        >
+          ↺ Limpiar
+        </button>
+        <button
+          (click)="printReport()"
+          class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+        >
+          🖨️ Imprimir Reporte
+        </button>
+       
+        <button
+          (click)="exportCSV()"
+          class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
+        >
+          📊 Exportar excel
+        </button>
+      </div>
+
+      <!-- Información de registros y resumen -->
+      <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+        <div class="bg-blue-50 p-2 rounded">
+          <span class="text-gray-600">Registros:</span>
+          <span class="font-bold text-blue-600">{{ filteredLogs.length }} / {{ allLogs.length }}</span>
+        </div>
+        <div class="bg-green-50 p-2 rounded">
+          <span class="text-gray-600">Exitosos:</span>
+          <span class="font-bold text-green-600">{{ getSuccessCount() }}</span>
+        </div>
+        <div class="bg-red-50 p-2 rounded">
+          <span class="text-gray-600">Errores:</span>
+          <span class="font-bold text-red-600">{{ getErrorCount() }}</span>
+        </div>
+        <div class="bg-purple-50 p-2 rounded">
+          <span class="text-gray-600">Período:</span>
+          <span class="font-bold text-purple-600">{{ getPeriodLabel() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de auditoría -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-100 border-b border-gray-300">
+            <tr>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Timestamp
+              </th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Usuario
+              </th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                IP
+              </th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Acción
+              </th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Tipo
+              </th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Descripción
+              </th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Estado
+              </th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Detalles
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let log of filteredLogs; let i = index">
+              <tr
+                [class.bg-red-50]="log.status === 'FAILED'"
+                class="border-b border-gray-200 hover:bg-gray-50 transition"
+              >
+                <!-- Timestamp -->
+                <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+                  {{ log.timestamp | date: "dd/MM/yyyy HH:mm:ss" }}
+                </td>
+
+                <!-- Usuario -->
+                <td class="px-6 py-4 text-sm text-gray-700">
+                  <span class="font-medium">{{ log.userName }}</span>
+                  <div class="text-xs text-gray-500">ID: {{ log.userId }}</div>
+                </td>
+
+                <!-- IP -->
+                <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+                  <span class="bg-blue-50 px-2 py-1 rounded text-xs font-mono">
+                    {{ log.ipAddress || 'N/A' }}
+                  </span>
+                </td>
+
+                <!-- Acción -->
+                <td class="px-6 py-4 text-sm text-gray-700">
+                  {{ log.action }}
+                </td>
+
+                <!-- Tipo -->
+                <td class="px-6 py-4 text-sm">
+                  <span
+                    [class]="getActionTypeClass(log.actionType)"
+                    class="px-2 py-1 rounded-full text-xs font-semibold"
+                  >
+                    {{ log.actionType }}
+                  </span>
+                </td>
+
+                <!-- Descripción -->
+                <td class="px-6 py-4 text-sm text-gray-700">
+                  {{ log.description }}
+                </td>
+
+                <!-- Estado -->
+                <td class="px-6 py-4 text-sm">
+                  <span
+                    [class.bg-green-100]="log.status === 'SUCCESS'"
+                    [class.bg-red-100]="log.status === 'FAILED'"
+                    [class.text-green-800]="log.status === 'SUCCESS'"
+                    [class.text-red-800]="log.status === 'FAILED'"
+                    class="px-2 py-1 rounded-full text-xs font-semibold"
+                  >
+                    {{ log.status }}
+                  </span>
+                </td>
+
+                <!-- Detalles -->
+                <td class="px-6 py-4 text-sm text-center">
+                  <button
+                    (click)="toggleDetails(i)"
+                    class="text-blue-600 hover:text-blue-800 font-semibold transition"
+                  >
+                    👁️
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila expandida con detalles -->
+              <tr *ngIf="expandedIndex === i" class="bg-gray-50">
+                <td colspan="7" class="px-6 py-4">
+                  <div class="bg-white border border-gray-300 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-900 mb-3">Detalles completos:</h4>
+                    <pre class="bg-gray-100 p-3 rounded text-xs overflow-auto max-h-60">{{
+                      log.details | json
+                    }}</pre>
+                    <div class="text-xs text-gray-500 mt-2">
+                      <p><strong>User Agent:</strong> {{ log.userAgent }}</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mensaje cuando no hay registros -->
+      <div
+        *ngIf="filteredLogs.length === 0"
+        class="p-8 text-center text-gray-500"
+      >
+        <p class="text-lg">No se encontraron registros de auditoría</p>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+      <div class="bg-blue-50 rounded-lg shadow p-4">
+        <div class="text-blue-600 text-sm font-semibold mb-1">Total de Registros</div>
+        <div class="text-3xl font-bold text-blue-900">{{ allLogs.length }}</div>
+      </div>
+      <div class="bg-green-50 rounded-lg shadow p-4">
+        <div class="text-green-600 text-sm font-semibold mb-1">Logins</div>
+        <div class="text-3xl font-bold text-green-900">
+          {{ getCountByActionType("LOGIN") }}
+        </div>
+      </div>
+      <div class="bg-red-50 rounded-lg shadow p-4">
+        <div class="text-red-600 text-sm font-semibold mb-1">Emergencias</div>
+        <div class="text-3xl font-bold text-red-900">
+          {{ getCountByActionType("EMERGENCY") }}
+        </div>
+      </div>
+      <div class="bg-yellow-50 rounded-lg shadow p-4">
+        <div class="text-yellow-600 text-sm font-semibold mb-1">Errores</div>
+        <div class="text-3xl font-bold text-yellow-900">
+          {{ getCountByActionType("ERROR") }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
