@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --open",
+    "start": "node server.js",
+    "dev": "ng serve --open",
     "build": "ng build",
+    "build:prod": "ng build && npm start",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
