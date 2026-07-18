@@ -3,9 +3,10 @@ const path = require('path');
 const fs = require('fs');
 
 console.log('[Server] Starting...');
+console.log('[Server] PORT env var:', process.env.PORT);
 
 const app = express();
-const port = process.env.PORT || 4200;
+const port = process.env.PORT || 3000;
 
 const distPath = path.join(__dirname, 'dist/ada-solar-frontend');
 console.log('[Server] Dist path:', distPath);
@@ -21,7 +22,6 @@ app.use(express.static(distPath));
 // Fallback for Angular routing
 app.get('*', (req, res) => {
   const indexPath = path.join(distPath, 'index.html');
-  console.log('[Server] Serving index.html from:', indexPath);
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
@@ -29,8 +29,23 @@ app.get('*', (req, res) => {
   }
 });
 
-app.listen(port, '0.0.0.0', () => {
+const server = app.listen(port, '0.0.0.0', () => {
   console.log(`[Server] ✓ Frontend running on port ${port}`);
+  console.log(`[Server] Ready to accept connections`);
 });
+
+server.on('error', (err) => {
+  console.error('[Server] Error:', err);
+  process.exit(1);
+});
+
+process.on('SIGTERM', () => {
+  console.log('[Server] SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('[Server] Closed');
+    process.exit(0);
+  });
+});
+
 
 
